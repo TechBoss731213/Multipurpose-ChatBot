@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { addMessage } from '../redux/slices/textChatSlice';
@@ -15,11 +15,19 @@ const TextChat = () => {
   const textChatHistory = useSelector((state: RootState) => state.textChat.history);
   const textChatMessageCount = useSelector((state: RootState) => state.textChat.messageCount);
 
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
+  const chatHistoryRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (chatHistoryRef.current) {
+      const element = chatHistoryRef.current;
+      element.scrollTo({ top: element.scrollHeight, behavior: 'smooth' })
+    }
+  }, [textChatHistory, chatHistoryRef.current?.scrollHeight]);
+
+  const { input, handleInputChange, handleSubmit } = useChat({
     api: '/api/text-chat',
     onFinish: (message) => {
       dispatch(addMessage({ role: message.role, content: message.content }));
-      console.log(textChatHistory);
     }
   });
 
@@ -38,7 +46,7 @@ const TextChat = () => {
           <Image src={fullScreenImageUrl} alt="Set to Full Screen" />
         </div>
       </div>
-      <div className="p-[20px] h-[calc(100%_-_183px)] overflow-y-auto">
+      <div className="p-[20px] h-[calc(100%_-_183px)] overflow-y-auto" ref={chatHistoryRef}>
         {textChatHistory.length > 0
           ? textChatHistory.map((item, index) => (
             <p key={index} className={`w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] ${item.role === "user" ? "rounded-l-[10px] ms-auto" : "rounded-r-[10px] me-auto"}`}>{item.content}</p>
