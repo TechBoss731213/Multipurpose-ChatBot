@@ -15,12 +15,17 @@ const TextChat = () => {
   const textChatHistory = useSelector((state: RootState) => state.textChat.history);
   const textChatMessageCount = useSelector((state: RootState) => state.textChat.messageCount);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
     api: '/api/text-chat',
     onFinish: (message) => {
       dispatch(addMessage({ role: message.role, content: message.content }));
+      console.log(textChatHistory);
     }
   });
+
+  const handleClickSubmit = () => {
+    dispatch(addMessage({ role: "user", content: input }));
+  }
 
   return (
     <>
@@ -34,9 +39,9 @@ const TextChat = () => {
         </div>
       </div>
       <div className="p-[20px] h-[calc(100%_-_183px)] overflow-y-auto">
-        {messages.length > 0
-          ? messages.map((item) => (
-            <p key={item.id} className={`w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] ${item.role === "user" ? "rounded-l-[10px] ms-auto" : "rounded-r-[10px] me-auto"}`}>{item.content}</p>
+        {textChatHistory.length > 0
+          ? textChatHistory.map((item, index) => (
+            <p key={index} className={`w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] ${item.role === "user" ? "rounded-l-[10px] ms-auto" : "rounded-r-[10px] me-auto"}`}>{item.content}</p>
           )) : null}
       </div>
       <div className="p-[20px] border-t-[1px] border-t-[#D0D0D0] rounded-br-[20px]">
@@ -49,7 +54,10 @@ const TextChat = () => {
             className="w-full max-h-[100px] p-[10px] outline-none rounded-[10px] resize-none border-[1px] border-[#D0D0D0] focus:border-[#999]"
           />
           <div className="absolute w-[36px] h-[36px] cursor-pointer bottom-[5px] right-[10px]">
-            <Image src={sendButtonImageUrl} className="opacity-[0.6] focus:opacity-[1]" alt="Send Message" onClick={(e) => handleSubmit(e as any)} />
+            <Image src={sendButtonImageUrl} className="opacity-[0.6] focus:opacity-[1]" alt="Send Message" onClick={(e) => {
+              handleClickSubmit();
+              handleSubmit(e as any);
+            }} />
           </div>
         </div>
       </div>
