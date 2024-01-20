@@ -52,7 +52,7 @@ const TextChat = () => {
             <p key={index} className={`w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] ${item.role === "user" ? "rounded-l-[10px] ms-auto" : "rounded-r-[10px] me-auto"}`}>
               {item.content.split('\n').map((line, lineIndex) => (
                 <React.Fragment key={lineIndex}>
-                  {lineIndex > 0 && <br />}3
+                  {lineIndex > 0 && <br />}
                   {line}
                 </React.Fragment>
               ))}
