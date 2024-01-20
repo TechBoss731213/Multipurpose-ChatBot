@@ -4,6 +4,8 @@ import { RootState } from '../redux/store';
 import { addMessage } from '../redux/slices/textChatSlice';
 import { useChat } from 'ai/react'
 
+import ReactMarkdown from 'react-markdown'
+
 import Image from 'next/image';
 
 import fullScreenImageUrl from "../images/fullscreen.png";
@@ -60,17 +62,10 @@ const TextChat = () => {
       <div className="p-[20px] h-[calc(100%_-_183px)] overflow-y-auto" ref={chatHistoryRef}>
         {textChatHistory.length > 0
           ? textChatHistory.map((item, index) => (
-            <div key={index} className={`w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] ${item.role === "user" ? "rounded-l-[10px] ms-auto" : "rounded-r-[10px] me-auto"}`}>
-              {item.content.split('\n').map((line, lineIndex) => (
-                <React.Fragment key={lineIndex}>
-                  {lineIndex > 0 && <br />}
-                  {item.role === "assistant" && line.startsWith('```') ? (
-                    <div className="code-message">{line.replace('```', '')}</div>
-                  ) : (
-                    line
-                  )}
-                </React.Fragment>
-              ))}
+            <div key={index} className={`chat-history w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] ${item.role === "user" ? "rounded-l-[10px] ms-auto" : "rounded-r-[10px] me-auto"}`}>
+              <ReactMarkdown>
+                {item.content}
+              </ReactMarkdown>
             </div>
           )) : null}
       </div>
