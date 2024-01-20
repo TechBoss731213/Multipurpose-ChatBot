@@ -25,3 +25,13 @@
     border-radius: 8px;
     white-space: pre-wrap;
 }
+
+.chat-history pre {
+    background-color: #333;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px;
+    overflow-x: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
