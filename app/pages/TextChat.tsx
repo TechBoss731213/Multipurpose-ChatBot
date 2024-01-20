@@ -16,13 +16,25 @@ const TextChat = () => {
   const textChatMessageCount = useSelector((state: RootState) => state.textChat.messageCount);
 
   const chatHistoryRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (chatHistoryRef.current) {
       const element = chatHistoryRef.current;
       element.scrollTo({ top: element.scrollHeight, behavior: 'smooth' })
     }
+
+    // if (textareaRef.current) {
+    //   textareaRef.current.style.height = `${Math.min(100, textareaRef.current.scrollHeight)}px`;
+    // }
   }, [textChatHistory, chatHistoryRef.current?.scrollHeight]);
+
+  const handleOnInput = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(100, textareaRef.current.scrollHeight)}px`;
+    }
+  }
 
   const { input, handleInputChange, handleSubmit } = useChat({
     api: '/api/text-chat',
@@ -32,6 +44,9 @@ const TextChat = () => {
   });
 
   const handleClickSubmit = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
     dispatch(addMessage({ role: "user", content: input }));
   }
 
@@ -59,11 +74,13 @@ const TextChat = () => {
             </p>
           )) : null}
       </div>
-      <div className="p-[20px] border-t-[1px] border-t-[#D0D0D0] rounded-br-[20px]">
+      <div className="p-[20px] border-t-[1px] border-t-[#D0D0D0] rounded-br-[20px] absolute w-full bottom-0 z-[1]">
         <div className="relative flex">
           <textarea
             rows={1}
+            ref={textareaRef}
             value={input}
+            onInput={handleOnInput}
             placeholder="Please write your message here!"
             onChange={handleInputChange}
             className="w-full max-h-[100px] p-[10px] outline-none rounded-[10px] resize-none border-[1px] border-[#D0D0D0] focus:border-[#999]"

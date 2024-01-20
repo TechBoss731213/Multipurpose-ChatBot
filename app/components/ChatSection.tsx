@@ -13,7 +13,7 @@ const ChatSection = () => {
 	const currentView = useSelector((state: RootState) => state.currentView.currentView);
 
 	return (
-		<div className="rounded-r-[20px] w-full">
+		<div className="rounded-r-[20px] w-full relative">
 			{currentView === 'TextChat' && <TextChat />}
 			{currentView === 'ImageGenerate' && <ImageGenerate />}
 			{currentView === 'MCQ' && <MCQ />}
