@@ -49,7 +49,14 @@ const TextChat = () => {
       <div className="p-[20px] h-[calc(100%_-_183px)] overflow-y-auto" ref={chatHistoryRef}>
         {textChatHistory.length > 0
           ? textChatHistory.map((item, index) => (
-            <p key={index} className={`w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] ${item.role === "user" ? "rounded-l-[10px] ms-auto" : "rounded-r-[10px] me-auto"}`}>{item.content}</p>
+            <p key={index} className={`w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] ${item.role === "user" ? "rounded-l-[10px] ms-auto" : "rounded-r-[10px] me-auto"}`}>
+              {item.content.split('\n').map((line, lineIndex) => (
+                <React.Fragment key={lineIndex}>
+                  {lineIndex > 0 && <br />}3
+                  {line}
+                </React.Fragment>
+              ))}
+            </p>
           )) : null}
       </div>
       <div className="p-[20px] border-t-[1px] border-t-[#D0D0D0] rounded-br-[20px]">
