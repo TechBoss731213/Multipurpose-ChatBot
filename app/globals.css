@@ -18,3 +18,10 @@
     background-clip: content-box;
     border: 1px solid transparent
 }
+
+.code-message {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 8px;
+    white-space: pre-wrap;
+}

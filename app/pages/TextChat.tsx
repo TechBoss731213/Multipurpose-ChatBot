@@ -23,15 +23,11 @@ const TextChat = () => {
       const element = chatHistoryRef.current;
       element.scrollTo({ top: element.scrollHeight, behavior: 'smooth' })
     }
-
-    // if (textareaRef.current) {
-    //   textareaRef.current.style.height = `${Math.min(100, textareaRef.current.scrollHeight)}px`;
-    // }
   }, [textChatHistory, chatHistoryRef.current?.scrollHeight]);
 
   const handleOnInput = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = '46px';
       textareaRef.current.style.height = `${Math.min(100, textareaRef.current.scrollHeight)}px`;
     }
   }
@@ -45,7 +41,7 @@ const TextChat = () => {
 
   const handleClickSubmit = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = '46px';
     }
     dispatch(addMessage({ role: "user", content: input }));
   }
@@ -64,14 +60,18 @@ const TextChat = () => {
       <div className="p-[20px] h-[calc(100%_-_183px)] overflow-y-auto" ref={chatHistoryRef}>
         {textChatHistory.length > 0
           ? textChatHistory.map((item, index) => (
-            <p key={index} className={`w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] ${item.role === "user" ? "rounded-l-[10px] ms-auto" : "rounded-r-[10px] me-auto"}`}>
+            <div key={index} className={`w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] ${item.role === "user" ? "rounded-l-[10px] ms-auto" : "rounded-r-[10px] me-auto"}`}>
               {item.content.split('\n').map((line, lineIndex) => (
                 <React.Fragment key={lineIndex}>
                   {lineIndex > 0 && <br />}
-                  {line}
+                  {item.role === "assistant" && line.startsWith('```') ? (
+                    <div className="code-message">{line.replace('```', '')}</div>
+                  ) : (
+                    line
+                  )}
                 </React.Fragment>
               ))}
-            </p>
+            </div>
           )) : null}
       </div>
       <div className="p-[20px] border-t-[1px] border-t-[#D0D0D0] rounded-br-[20px] absolute w-full bottom-0 z-[1]">
