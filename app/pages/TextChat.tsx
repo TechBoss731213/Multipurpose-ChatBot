@@ -48,6 +48,16 @@ const TextChat = () => {
     dispatch(addMessage({ role: "user", content: input }));
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && e.ctrlKey) {
+      e.preventDefault();
+      if (input.trim() !== '') {
+        handleClickSubmit();
+        handleSubmit(e as any);
+      }
+    }
+  };
+
   return (
     <>
       <div className="p-[20px] flex justify-between items-center border-b-[1px] border-b-[#D0D0D0]">
@@ -63,9 +73,20 @@ const TextChat = () => {
         {textChatHistory.length > 0
           ? textChatHistory.map((item, index) => (
             <div key={index} className={`chat-history w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] ${item.role === "user" ? "rounded-l-[10px] ms-auto" : "rounded-r-[10px] me-auto"}`}>
-              <ReactMarkdown>
-                {item.content}
-              </ReactMarkdown>
+              {item.role === "user" ? (
+                <>
+                  {item.content.split('\n').map((line, lineIndex) => (
+                    <React.Fragment key={lineIndex}>
+                      {lineIndex > 0 && <br />}
+                      {line}
+                    </React.Fragment>
+                  ))}
+                </>
+              ) : (
+                <ReactMarkdown>
+                  {item.content}
+                </ReactMarkdown>
+              )}
             </div>
           )) : null}
       </div>
@@ -76,6 +97,7 @@ const TextChat = () => {
             ref={textareaRef}
             value={input}
             onInput={handleOnInput}
+            onKeyDown={handleKeyDown}
             placeholder="Please write your message here!"
             onChange={handleInputChange}
             className="w-full max-h-[100px] p-[10px] outline-none rounded-[10px] resize-none border-[1px] border-[#D0D0D0] focus:border-[#999]"
