@@ -1,19 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import textChatReducer from './slices/textChatSlice';
-import imageGenerateReducer from './slices/imageGenerateSlice';
-import mcqReducer from './slices/mcqSlice';
-import videoGenerateReducer from './slices/videoGenerateSlice';
-import ImageGenerateHTMLReducer from './slices/ImageGenerateHTMLSlice';
 import currentViewReducer from './slices/currentViewSlice';
+import fullScreenStateReducer from './slices/fullScreenStateSlice';
 
 const store = configureStore({
 	reducer: {
 		textChat: textChatReducer,
-		imageGenerate: imageGenerateReducer,
-		mcq: mcqReducer,
-		videoGenerate: videoGenerateReducer,
-		imageGenerateHTML: ImageGenerateHTMLReducer,
 		currentView: currentViewReducer,
+		fullScreenState: fullScreenStateReducer,
 	},
 });
 
