@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import { addMessage } from '../redux/slices/textChatSlice';
+import { addMessage, addThread, switchThread } from '../redux/slices/textChatSlice';
 import { toggleFullScreen } from '../redux/slices/fullScreenStateSlice';
-import { useChat } from 'ai/react'
+import { useChat } from 'ai/react';
 
 import ReactMarkdown from 'react-markdown'
 
@@ -16,8 +16,8 @@ import sendButtonImageUrl from "../images/send.png";
 const TextChat = () => {
   const dispatch = useDispatch();
   const isFullScreen = useSelector((state: RootState) => state.fullScreenState.isFullScreen);
-  const textChatHistory = useSelector((state: RootState) => state.textChat.history);
-  const textChatMessageCount = useSelector((state: RootState) => state.textChat.messageCount);
+  const threads = useSelector((state: RootState) => state.textChat.threads);
+  const activeThreadId = useSelector((state: RootState) => state.textChat.activeThreadId);
 
   const chatHistoryRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -25,9 +25,9 @@ const TextChat = () => {
   useEffect(() => {
     if (chatHistoryRef.current) {
       const element = chatHistoryRef.current;
-      element.scrollTo({ top: element.scrollHeight, behavior: 'smooth' })
+      element.scrollTo({ top: element.scrollHeight, behavior: 'smooth' });
     }
-  }, [textChatHistory, chatHistoryRef.current?.scrollHeight]);
+  }, [threads, activeThreadId]);
 
   const handleOnInput = () => {
     if (textareaRef.current) {
@@ -69,7 +69,9 @@ const TextChat = () => {
       <div className="p-[20px] flex justify-between items-center border-b-[1px] border-b-[#D0D0D0]">
         <div>
           <h2 className="text-[20px] font-semibold">Text Based ChatBot</h2>
-          <p className="text-[14px] font-semibold mt-[5px]">{textChatMessageCount} messages</p>
+          <p className="text-[14px] font-semibold mt-[5px]">
+            {threads.find(thread => thread.id === activeThreadId)?.messages.length} messages
+          </p>
         </div>
         <div className="w-[26px] h-[26px] opacity-[0.6] cursor-pointer" onClick={handleToggleFullScreen}>
           {isFullScreen ? (
@@ -80,25 +82,34 @@ const TextChat = () => {
         </div>
       </div>
       <div className="p-[20px] h-[calc(100%_-_183px)] overflow-y-auto" ref={chatHistoryRef}>
-        {textChatHistory.length > 0
-          ? textChatHistory.map((item, index) => (
-            <div key={index} className={`chat-history w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] ${item.role === "user" ? "rounded-l-[10px] ms-auto" : "rounded-r-[10px] me-auto"}`}>
-              {item.role === "user" ? (
+        {threads
+          .filter(thread => thread.id === activeThreadId)
+          .map((thread) => (
+            <>
+              {thread.messages.length > 0 && (
                 <>
-                  {item.content.split('\n').map((line, lineIndex) => (
-                    <React.Fragment key={lineIndex}>
-                      {lineIndex > 0 && <br />}
-                      {line}
-                    </React.Fragment>
+                  {thread.messages.map((item, index) => (
+                    <div key={index} className={`chat-history w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] ${item.role === "user" ? "rounded-l-[10px] ms-auto" : "rounded-r-[10px] me-auto"}`}>
+                      {item.role === "user" ? (
+                        <>
+                          {item.content.split('\n').map((line, lineIndex) => (
+                            <React.Fragment key={lineIndex}>
+                              {lineIndex > 0 && <br />}
+                              {line}
+                            </React.Fragment>
+                          ))}
+                        </>
+                      ) : (
+                        <ReactMarkdown>
+                          {item.content}
+                        </ReactMarkdown>
+                      )}
+                    </div>
                   ))}
                 </>
-              ) : (
-                <ReactMarkdown>
-                  {item.content}
-                </ReactMarkdown>
               )}
-            </div>
-          )) : null}
+            </>
+          ))}
       </div>
       <div className="p-[20px] border-t-[1px] border-t-[#D0D0D0] rounded-br-[20px] absolute w-full bottom-0 z-[1]">
         <div className="relative flex">

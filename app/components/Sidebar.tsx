@@ -7,20 +7,26 @@ import Link from "next/link";
 import Image from "next/image";
 
 import logo from "../images/logo.png";
+import { addThread, switchThread } from "../redux/slices/textChatSlice";
 
 const Sidebar = () => {
+	const activeThreadId = useSelector((state: RootState) => state.textChat.activeThreadId);
+	const threads = useSelector((state: RootState) => state.textChat.threads);
 
-	const currentView = useSelector((state: RootState) => state.currentView.currentView);
-	const textChatMessageCount = useSelector((state: RootState) => state.textChat.messageCount);
-	
 	const dispatch = useDispatch();
 
-	const handleMenuClick = (view: string) => {
-		dispatch(setCurrentView(view));
+	const handleThreadSwitch = (threadId: number) => {
+		dispatch(switchThread(threadId));
+		dispatch(setCurrentView('TextChat'));
+	};
+
+	const handleAddThread = () => {
+		const threadId = threads.length + 1;
+		dispatch(addThread(threadId));
 	};
 
 	return (
-		<div className="px-[20px] pt-[40px] bg-[#E7F8FF] rounded-l-[20px] max-w-[360px] w-full">
+		<div className="px-[20px] pt-[40px] bg-[#E7F8FF] rounded-l-[20px] max-w-[360px] w-full relative">
 			<Link href="/" className="flex justify-between items-center mb-[30px]">
 				<div className="flex flex-col items-start">
 					<h2 className="text-[20px] font-bold">Multipurpose GPT</h2>
@@ -30,9 +36,18 @@ const Sidebar = () => {
 					<Image src={logo} width={40} height={40} alt="Multipurpose GPT Logo" />
 				</div>
 			</Link>
-			<div className={`w-full p-[10px] bg-[#fff] rounded-[10px] cursor-pointer shadow mb-[20px] ${currentView === "TextChat" && "border-[2px] border-[#1D93AB]"}`} onClick={() => handleMenuClick('TextChat')}>
-				<h3 className="text-[14px] font-semibold">Text Based ChatBot</h3>
-				<p className="text-[12px] mt-[8px]">{textChatMessageCount} messages</p>
+			{threads.map((thread) => (
+				<div
+					key={thread.id}
+					className={`w-full p-[10px] bg-[#fff] rounded-[10px] cursor-pointer shadow mb-[20px] ${activeThreadId === thread.id && "border-[2px] border-[#1D93AB]"}`}
+					onClick={() => handleThreadSwitch(thread.id)}
+				>
+					<h3 className="text-[14px] font-semibold">Thread {thread.id}</h3>
+					<p className="text-[12px] mt-[8px]">{thread.messageCount} messages</p>
+				</div>
+			))}
+			<div className="absolute p-[10px] bg-[#fff] w-[calc(100%_-_40px)] bottom-[20px] rounded-[10px] shadow cursor-pointer text-center" onClick={handleAddThread}>
+				New Chat
 			</div>
 		</div>
 	);
