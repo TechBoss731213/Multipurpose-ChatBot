@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { addMessage } from '../redux/slices/textChatSlice';
+import { toggleFullScreen } from '../redux/slices/fullScreenStateSlice';
 import { useChat } from 'ai/react'
 
 import ReactMarkdown from 'react-markdown'
@@ -14,6 +15,7 @@ import sendButtonImageUrl from "../images/send.png";
 
 const TextChat = () => {
   const dispatch = useDispatch();
+  const isFullScreen = useSelector((state: RootState) => state.fullScreenState.isFullScreen);
   const textChatHistory = useSelector((state: RootState) => state.textChat.history);
   const textChatMessageCount = useSelector((state: RootState) => state.textChat.messageCount);
 
@@ -58,6 +60,10 @@ const TextChat = () => {
     }
   };
 
+  const handleToggleFullScreen = () => {
+    dispatch(toggleFullScreen());
+  };
+
   return (
     <>
       <div className="p-[20px] flex justify-between items-center border-b-[1px] border-b-[#D0D0D0]">
@@ -65,8 +71,12 @@ const TextChat = () => {
           <h2 className="text-[20px] font-semibold">Text Based ChatBot</h2>
           <p className="text-[14px] font-semibold mt-[5px]">{textChatMessageCount} messages</p>
         </div>
-        <div className="w-[26px] h-[26px] opacity-[0.6] cursor-pointer">
-          <Image src={fullScreenImageUrl} alt="Set to Full Screen" />
+        <div className="w-[26px] h-[26px] opacity-[0.6] cursor-pointer" onClick={handleToggleFullScreen}>
+          {isFullScreen ? (
+            <Image src={undoFullScreenImageUrl} alt="Unset to Full Screen" />
+          ) : (
+            <Image src={fullScreenImageUrl} alt="Set to Full Screen" />
+          )}
         </div>
       </div>
       <div className="p-[20px] h-[calc(100%_-_183px)] overflow-y-auto" ref={chatHistoryRef}>
