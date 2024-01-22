@@ -12,6 +12,7 @@ import Image from 'next/image';
 import fullScreenImageUrl from "../images/fullscreen.png";
 import undoFullScreenImageUrl from "../images/undo-fullscreen.png";
 import sendButtonImageUrl from "../images/send.png";
+import pandaImageUrl from "../images/panda.png"
 
 const TextChat = () => {
   const dispatch = useDispatch();
@@ -82,6 +83,25 @@ const TextChat = () => {
         </div>
       </div>
       <div className="p-[20px] h-[calc(100%_-_183px)] overflow-y-auto" ref={chatHistoryRef}>
+        <p className="chat-history w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] rounded-l-[10px] ms-auto">
+          Can you give me a panda image?
+        </p>
+        <div className="max-w-[600px] w-full p-[10px] border border-[#D0D0D0] bg-[#E7F8FF] rounded-t-[10px] rounded-r-[10px] mb-[20px]">
+          <Image src={pandaImageUrl} alt="Panda Image" />
+        </div>
+        <p className="chat-history w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] rounded-l-[10px] ms-auto">
+          What services do you offer?
+        </p>
+        <div className="flex max-w-[600px] gap-[10px]">
+          <button className="p-[10px] border border-[#D0D0D0] bg-[#E7F8FF] rounded-[10px] cursor-pointer">Service 01</button>
+          <button className="p-[10px] border border-[#D0D0D0] bg-[#E7F8FF] rounded-[10px] cursor-pointer">Service 02</button>
+          <button className="p-[10px] border border-[#D0D0D0] bg-[#E7F8FF] rounded-[10px] cursor-pointer">Service 03</button>
+          <button className="p-[10px] border border-[#D0D0D0] bg-[#E7F8FF] rounded-[10px] cursor-pointer">Service 04</button>
+          <button className="p-[10px] border border-[#D0D0D0] bg-[#E7F8FF] rounded-[10px] cursor-pointer">Service 05</button>
+        </div>
+        <p className="chat-history w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] rounded-l-[10px] ms-auto">
+          Please give me a sample video.
+        </p>
         {threads
           .filter(thread => thread.id === activeThreadId)
           .map((thread) => (
