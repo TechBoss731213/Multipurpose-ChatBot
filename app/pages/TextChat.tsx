@@ -121,11 +121,9 @@ const TextChat = () => {
                         <>
                           {item.resType === 1 ? (
                             <div className="chat-history w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] rounded-r-[10px] me-auto">
-                              <pre>
-                                <ReactMarkdown>
-                                  {item.content}
-                                </ReactMarkdown>
-                              </pre>
+                              <ReactMarkdown>
+                                {item.content}
+                              </ReactMarkdown>
                             </div>
                           ) : (
                             <>
