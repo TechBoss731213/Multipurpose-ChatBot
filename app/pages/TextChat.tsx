@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { addMessage, addThread, switchThread } from '../redux/slices/textChatSlice';
 import { toggleFullScreen } from '../redux/slices/fullScreenStateSlice';
-import { useChat } from 'ai/react';
+import { useChat, useCompletion } from 'ai/react';
+import VideoComponent from '../components/VideoComponent';
 
 import ReactMarkdown from 'react-markdown'
 
@@ -37,10 +38,11 @@ const TextChat = () => {
     }
   }
 
-  const { input, handleInputChange, handleSubmit } = useChat({
+  const { input, handleInputChange, handleSubmit, setInput } = useChat({
     api: '/api/text-chat',
     onFinish: (message) => {
-      dispatch(addMessage({ role: message.role, content: message.content }));
+      const { requestType, data } = JSON.parse(message.content);
+      dispatch(addMessage({ role: message.role, content: data, resType: requestType }));
     }
   });
 
@@ -48,7 +50,7 @@ const TextChat = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = '46px';
     }
-    dispatch(addMessage({ role: "user", content: input }));
+    dispatch(addMessage({ role: "user", content: input, resType: 1 }));
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -64,6 +66,21 @@ const TextChat = () => {
   const handleToggleFullScreen = () => {
     dispatch(toggleFullScreen());
   };
+
+  // const handleCheckRequestType = (e) => {
+
+  //   if(input === "Could you give me a sample video?") {
+  //     handleSubmit(e)
+  //   }
+
+  // try {
+  //   const response = await fetch(`/api/request-type?request=${input}`);
+  //   const requestType = await response.json();
+  //   console.log(requestType["requestType"]);
+  // } catch (error) {
+  //   console.error('Error fetching data:', error);
+  // }
+  // }
 
   return (
     <>
@@ -83,37 +100,6 @@ const TextChat = () => {
         </div>
       </div>
       <div className="p-[20px] h-[calc(100%_-_183px)] overflow-y-auto" ref={chatHistoryRef}>
-        <p className="w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] rounded-l-[10px] ms-auto">
-          Can you give me a panda image?
-        </p>
-        <div className="max-w-[600px] w-full p-[10px] border border-[#D0D0D0] bg-[#E7F8FF] rounded-t-[10px] rounded-r-[10px] mb-[20px]">
-          <Image src={pandaImageUrl} alt="Panda Image" />
-        </div>
-        <p className="w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] rounded-l-[10px] ms-auto">
-          What services do you offer?
-        </p>
-        <div className="flex max-w-[600px] gap-[10px] mb-[30px]">
-          <button className="p-[10px] border border-[#D0D0D0] bg-[#E7F8FF] rounded-[10px] cursor-pointer">Service 01</button>
-          <button className="p-[10px] border border-[#D0D0D0] bg-[#E7F8FF] rounded-[10px] cursor-pointer">Service 02</button>
-          <button className="p-[10px] border border-[#D0D0D0] bg-[#E7F8FF] rounded-[10px] cursor-pointer">Service 03</button>
-          <button className="p-[10px] border border-[#D0D0D0] bg-[#E7F8FF] rounded-[10px] cursor-pointer">Service 04</button>
-          <button className="p-[10px] border border-[#D0D0D0] bg-[#E7F8FF] rounded-[10px] cursor-pointer">Service 05</button>
-        </div>
-        <p className="chat-history w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] rounded-l-[10px] ms-auto">
-          Please give me a sample video.
-        </p>
-        <video width="320" height="240" controls preload="none" className="max-w-[600px] w-full mb-[30px]">
-          <source src={"./videos/sample.mp4"} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-        <p className="w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] rounded-l-[10px] ms-auto">
-          <code>
-            {`<img src="image_url_here.jpg" alt="Descriptive text here" style="display: block; margin: 0 auto; max-width: 100%; height: auto;" />`}
-          </code>
-        </p>
-        <div className="max-w-[600px] w-full p-[10px] border border-[#D0D0D0] bg-[#E7F8FF] rounded-t-[10px] rounded-r-[10px] mb-[20px]">
-          <Image src={pandaImageUrl} alt="Panda Image" />
-        </div>
         {threads
           .filter(thread => thread.id === activeThreadId)
           .map((thread) => (
@@ -121,20 +107,42 @@ const TextChat = () => {
               {thread.messages.length > 0 && (
                 <>
                   {thread.messages.map((item, index) => (
-                    <div key={index} className={`chat-history w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] ${item.role === "user" ? "rounded-l-[10px] ms-auto" : "rounded-r-[10px] me-auto"}`}>
+                    <div key={index}>
                       {item.role === "user" ? (
-                        <>
-                          {item.content.split('\n').map((line, lineIndex) => (
+                        <div className="chat-history w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] rounded-l-[10px] ms-auto">
+                          {item.content.split('\n').map((line: any, lineIndex: any) => (
                             <React.Fragment key={lineIndex}>
                               {lineIndex > 0 && <br />}
                               {line}
                             </React.Fragment>
                           ))}
-                        </>
+                        </div>
                       ) : (
-                        <ReactMarkdown>
-                          {item.content}
-                        </ReactMarkdown>
+                        <>
+                          {item.resType === 1 ? (
+                            <div className="chat-history w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] rounded-r-[10px] me-auto">
+                              <ReactMarkdown>
+                                {item.content}
+                              </ReactMarkdown>
+                            </div>
+                          ) : (
+                            <>
+                              {item.resType === 3 ? (
+                                <div className="chat-history w-fit p-[10px] bg-[#E7F8FF] text-[#303030] rounded-t-[10px] border border-[#D0D0D0] max-w-[600px] mb-[20px] rounded-r-[10px] me-auto">
+                                  <VideoComponent videoUrl={item.content} />
+                                </div>
+                              ) : (
+                                <div className="flex max-w-[600px] gap-[10px] mb-[30px]">
+                                  {item.content.map((m: any) => (
+                                    <div key={m.id}>
+                                      <button className="p-[10px] border border-[#D0D0D0] bg-[#E7F8FF] rounded-[10px] cursor-pointer" onClick={() => setInput(m.prompt)}>{m.content}</button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </>
                       )}
                     </div>
                   ))}
