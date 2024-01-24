@@ -2,7 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Message {
 	role: string;
-	content: string;
+	content: any;
+	resType: number;
 }
 
 interface Thread {
